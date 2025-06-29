@@ -379,77 +379,111 @@
         </div>
     </div>
 
-    <!-- Panel Administrativo -->
-    <div id="adminPanel" style="display: none;">
-        <div style="background: #F0F1EC; min-height: 100vh; padding: 20px;">
-            <div class="container">
-                <div class="admin-header">
-                    <h1 class="admin-title">Panel de Administración</h1>
-                    <button class="logout-btn" onclick="logout()">
-                        🚪 Cerrar Sesión
-                    </button>
+<!-- Panel Administrativo -->
+<div id="adminPanel" style="display: none;">
+    <div style="background: #F0F1EC; min-height: 100vh; padding: 20px;">
+        <div class="container">
+            <div class="admin-header">
+                <h1 class="admin-title">Panel de Administración</h1>
+                <button class="logout-btn" onclick="logout()">
+                    🚪 Cerrar Sesión
+                </button>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalReservations">0</div>
+                    <div class="stat-label">Total Reservas</div>
                 </div>
-
-                <!-- Estadísticas -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalReservations">0</div>
-                        <div class="stat-label">Total Reservas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="monthlyRevenue">$0</div>
-                        <div class="stat-label">Ingresos del Mes</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="todayReservations">0</div>
-                        <div class="stat-label">Reservas Hoy</div>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="monthlyRevenue">$0</div>
+                    <div class="stat-label">Ingresos del Mes</div>
                 </div>
-
-                <div class="admin-grid">
-                    <!-- Configuración de Precios -->
-                    <div class="admin-card">
-                        <h3 class="admin-card-title">Configuración de Precios</h3>
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; color: #173E4B; font-weight: 600; margin-bottom: 5px;">
-                                Consulta 30 min (CLP)
-                            </label>
-                            <input type="number" id="price30Input" class="price-input" value="45000">
-                        </div>
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; color: #173E4B; font-weight: 600; margin-bottom: 5px;">
-                                Consulta 60 min (CLP)
-                            </label>
-                            <input type="number" id="price60Input" class="price-input" value="75000">
-                        </div>
-                        <button class="save-btn" onclick="updatePrices()">💾 Guardar Precios</button>
-                    </div>
-
-                    <!-- Fechas Bloqueadas -->
-                    <div class="admin-card">
-                        <h3 class="admin-card-title">Fechas Bloqueadas</h3>
-                        <div style="margin-bottom: 20px;">
-                            <input type="date" id="blockDateInput" class="date-input">
-                            <button class="add-date-btn" onclick="blockDate()">➕ Bloquear Fecha</button>
-                        </div>
-                        <div id="blockedDatesList">
-                            <p style="color: #6b7280; font-style: italic;">No hay fechas bloqueadas</p>
-                        </div>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="todayReservations">0</div>
+                    <div class="stat-label">Reservas Hoy</div>
                 </div>
+            </div>
 
-                <!-- Lista de Reservas -->
+            <div class="admin-grid">
+                <!-- Configuración de Precios -->
                 <div class="admin-card">
-                    <h3 class="admin-card-title">Reservas Confirmadas (<span id="reservationCount">0</span>)</h3>
-                    <div id="reservationsContainer">
-                        <div class="no-reservations">
-                            📅 No hay reservas confirmadas aún
-                        </div>
+                    <h3 class="admin-card-title">Configuración de Precios</h3>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; color: #173E4B; font-weight: 600; margin-bottom: 5px;">
+                            Consulta 30 min (CLP)
+                        </label>
+                        <input type="number" id="price30Input" class="price-input" value="45000">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; color: #173E4B; font-weight: 600; margin-bottom: 5px;">
+                            Consulta 60 min (CLP)
+                        </label>
+                        <input type="number" id="price60Input" class="price-input" value="75000">
+                    </div>
+                    <button class="save-btn" onclick="updatePrices()">💾 Guardar Precios</button>
+                </div>
+
+                <!-- Fechas Bloqueadas -->
+                <div class="admin-card">
+                    <h3 class="admin-card-title">Fechas Bloqueadas</h3>
+                    <div style="margin-bottom: 20px;">
+                        <input type="date" id="blockDateInput" class="date-input">
+                        <button class="add-date-btn" onclick="blockDate()">➕ Bloquear Fecha</button>
+                    </div>
+                    <div id="blockedDatesList">
+                        <p style="color: #6b7280; font-style: italic;">No hay fechas bloqueadas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-grid">
+                <!-- Cambio de Contraseña -->
+                <div class="admin-card">
+                    <h3 class="admin-card-title">Seguridad</h3>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; color: #173E4B; font-weight: 600; margin-bottom: 5px;">
+                            Contraseña Actual
+                        </label>
+                        <input type="password" id="currentPassword" class="price-input" placeholder="Contraseña actual">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; color: #173E4B; font-weight: 600; margin-bottom: 5px;">
+                            Nueva Contraseña
+                        </label>
+                        <input type="password" id="newPassword" class="price-input" placeholder="Nueva contraseña">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; color: #173E4B; font-weight: 600; margin-bottom: 5px;">
+                            Confirmar Nueva Contraseña
+                        </label>
+                        <input type="password" id="confirmPassword" class="price-input" placeholder="Confirmar contraseña">
+                    </div>
+                    <button class="save-btn" onclick="changePassword()">🔒 Cambiar Contraseña</button>
+                </div>
+
+                <!-- Espacio para futuras funcionalidades -->
+                <div class="admin-card">
+                    <h3 class="admin-card-title">Configuración Avanzada</h3>
+                    <p style="color: #6b7280; font-style: italic; text-align: center; padding: 20px;">
+                        Próximamente: Configuración de horarios personalizados, notificaciones automáticas y más.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Lista de Reservas -->
+            <div class="admin-card">
+                <h3 class="admin-card-title">Reservas Confirmadas (<span id="reservationCount">0</span>)</h3>
+                <div id="reservationsContainer">
+                    <div class="no-reservations">
+                        📅 No hay reservas confirmadas aún
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Modal de login admin -->
     <div id="loginModal" class="modal" style="display: none;">
