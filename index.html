@@ -79,13 +79,17 @@
         }
         .modal-content { 
             background: white; padding: 30px; border-radius: 15px; 
-            max-width: 400px; width: 100%; margin: 20px; 
+            max-width: 700px; width: 100%; margin: 20px; max-height: 90vh; overflow-y: auto;
         }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; color: #173E4B; font-weight: 600; margin-bottom: 8px; }
         .form-input { 
             width: 100%; padding: 12px; border: 2px solid #173E4B; 
             border-radius: 8px; font-size: 16px; 
+        }
+        .form-textarea { 
+            width: 100%; padding: 12px; border: 2px solid #173E4B; 
+            border-radius: 8px; font-size: 16px; height: 100px; resize: none;
         }
         .btn-group { display: flex; gap: 15px; margin-top: 30px; }
         .btn-secondary { 
@@ -96,13 +100,51 @@
             flex: 1; padding: 12px; background: #173E4B; color: white; 
             border: none; border-radius: 8px; cursor: pointer; font-weight: 600; 
         }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+        .form-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+        .form-title { color: #173E4B; font-size: 24px; font-weight: bold; margin: 0; }
+        .booking-summary { text-align: right; color: #173E4B; }
+        .summary-type { font-weight: 600; font-size: 16px; }
+        .summary-details { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+        .summary-price { font-size: 18px; font-weight: bold; margin-top: 4px; }
+        .error-message { color: #ef4444; font-size: 12px; margin-top: 4px; }
+        .payment-section { 
+            background: #e3f2fd; padding: 20px; border-radius: 10px; 
+            margin: 20px 0; border: 1px solid #2196f3; 
+        }
+        .mp-logo { 
+            display: flex; align-items: center; gap: 10px; margin-bottom: 15px; 
+        }
+        .mp-icon { 
+            width: 48px; height: 32px; background: #00b4d8; border-radius: 5px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-weight: bold; font-size: 12px; 
+        }
+        .step-indicator {
+            display: flex; justify-content: center; gap: 10px; margin-bottom: 30px;
+        }
+        .step {
+            width: 30px; height: 30px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: bold;
+            font-size: 14px;
+        }
+        .step.active { background: #173E4B; color: white; }
+        .step.completed { background: #10b981; color: white; }
+        .step.pending { background: #e5e7eb; color: #6b7280; }
     </style>
 </head>
 <body>
     <button class="admin-btn" onclick="showLogin()">⚙️ Admin</button>
     
-    <div class="container">
+    <!-- Paso 1: Selección de fecha y hora -->
+    <div id="step1" class="container">
         <h1 class="title">Agenda una consulta</h1>
+        
+        <div class="step-indicator">
+            <div class="step active">1</div>
+            <div class="step pending">2</div>
+            <div class="step pending">3</div>
+        </div>
         
         <div class="grid">
             <!-- Panel izquierdo -->
@@ -174,9 +216,111 @@
         </div>
     </div>
 
-    <!-- Modal de login -->
+    <!-- Paso 2: Formulario de datos del cliente -->
+    <div id="step2" style="display: none;">
+        <div class="container">
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step active">2</div>
+                <div class="step pending">3</div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+                <div class="card" style="max-width: 700px; width: 100%;">
+                    <div class="form-header">
+                        <h2 class="form-title">Completa tus datos</h2>
+                        <div class="booking-summary">
+                            <div class="summary-type" id="summaryType">Consulta Breve</div>
+                            <div class="summary-details" id="summaryDetails">Fecha no seleccionada</div>
+                            <div class="summary-price" id="summaryPrice">$ 45.000</div>
+                        </div>
+                    </div>
+                    
+                    <form id="clientForm">
+                        <div class="form-group">
+                            <label class="form-label">Nombre completo *</label>
+                            <input type="text" id="clientName" class="form-input" required>
+                            <div id="nameError" class="error-message" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email *</label>
+                            <input type="email" id="clientEmail" class="form-input" placeholder="ejemplo@correo.com" required>
+                            <div id="emailError" class="error-message" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Teléfono *</label>
+                            <input type="tel" id="clientPhone" class="form-input" placeholder="9 1234 5678" required>
+                            <div id="phoneError" class="error-message" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Motivo de consulta (opcional)</label>
+                            <textarea id="clientReason" class="form-textarea" 
+                                    placeholder="Describe brevemente el motivo de tu consulta..."></textarea>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="button" class="btn-secondary" onclick="goToStep(1)">Volver</button>
+                            <button type="submit" class="btn-primary" id="proceedBtn">Proceder al pago</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paso 3: Confirmación y pago -->
+    <div id="step3" style="display: none;">
+        <div class="container">
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step completed">2</div>
+                <div class="step active">3</div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+                <div class="card" style="max-width: 600px; width: 100%;">
+                    <h2 style="color: #173E4B; font-size: 24px; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 10px;">
+                        💳 Confirmar y pagar
+                    </h2>
+                    
+                    <div style="background: #F0F1EC; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h3 style="color: #173E4B; margin-bottom: 15px; font-weight: 600;">Resumen de tu reserva:</h3>
+                        <div id="finalSummary" style="color: #173E4B; font-size: 14px; line-height: 1.8;"></div>
+                        <div style="border-top: 2px solid #173E4B; padding-top: 15px; margin-top: 15px;">
+                            <div id="totalPrice" style="font-size: 24px; font-weight: bold; color: #173E4B;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-section">
+                        <div class="mp-logo">
+                            <div class="mp-icon">MP</div>
+                            <div>
+                                <div style="font-weight: 600; color: #173E4B;">Pago con MercadoPago</div>
+                                <div style="font-size: 12px; color: #173E4B; opacity: 0.7;">Tarjetas de crédito y débito • Pagos en cuotas disponibles</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; color: #173E4B; opacity: 0.8;">
+                            <div>• Pago seguro y protegido</div>
+                            <div>• Cuotas sin interés disponibles con tarjetas de crédito</div>
+                            <div>• Confirmación inmediata por email</div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="goToStep(2)">Volver</button>
+                        <button class="btn-primary" onclick="processPayment()">Pagar y Confirmar Reserva</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de login admin -->
     <div id="loginModal" class="modal" style="display: none;">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 400px;">
             <h3 style="color: #173E4B; margin-bottom: 20px; font-size: 18px; font-weight: bold;">
                 Acceso Administrativo
             </h3>
@@ -189,13 +333,17 @@
     </div>
 
     <script>
+        // Variables globales
         let selectedDuration = 30;
         let selectedDate = null;
         let selectedTime = null;
         let currentMonth = new Date();
+        let clientData = {};
         
         const workHours = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+        const prices = { 30: 45000, 60: 75000 };
         
+        // Funciones principales
         function selectDuration(duration) {
             selectedDuration = duration;
             document.getElementById('btn30').classList.toggle('active', duration === 30);
@@ -224,12 +372,10 @@
             
             let html = '';
             
-            // Días vacíos al inicio
             for (let i = 0; i < firstDay.getDay(); i++) {
                 html += '<div></div>';
             }
             
-            // Días del mes
             for (let day = 1; day <= lastDay.getDate(); day++) {
                 const date = new Date(year, month, day);
                 const dayName = date.getDay();
@@ -248,7 +394,6 @@
             selectedDate = dateStr;
             selectedTime = null;
             
-            // Actualizar estilos
             document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
@@ -294,21 +439,139 @@
             });
             event.target.classList.add('selected');
             
-            // Agregar botón de confirmar
             if (!document.getElementById('confirmBtn')) {
                 const confirmBtn = document.createElement('button');
                 confirmBtn.id = 'confirmBtn';
                 confirmBtn.className = 'confirm-btn';
                 confirmBtn.textContent = 'Confirmar';
-                confirmBtn.onclick = proceedToForm;
+                confirmBtn.onclick = () => goToStep(2);
                 document.getElementById('timeSlots').appendChild(confirmBtn);
             }
         }
         
-        function proceedToForm() {
-            alert(`¡Perfecto! Has seleccionado:\n\nFecha: ${selectedDate}\nHora: ${selectedTime}\nDuración: ${selectedDuration} min\n\nPronto tendremos el formulario completo con MercadoPago integrado.`);
+        function goToStep(step) {
+            // Ocultar todos los pasos
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`step${i}`).style.display = 'none';
+            }
+            
+            // Mostrar el paso solicitado
+            document.getElementById(`step${step}`).style.display = 'block';
+            
+            if (step === 2) {
+                updateSummary();
+            } else if (step === 3) {
+                updateFinalSummary();
+            }
         }
         
+        function updateSummary() {
+            document.getElementById('summaryType').textContent = 
+                selectedDuration === 30 ? 'Consulta Breve' : 'Consulta Completa';
+            document.getElementById('summaryDetails').textContent = 
+                selectedDate && selectedTime ? `${selectedDate} / ${selectedTime}` : 'Fecha no seleccionada';
+            document.getElementById('summaryPrice').textContent = 
+                `$ ${prices[selectedDuration].toLocaleString('es-CL')}`;
+        }
+        
+        function updateFinalSummary() {
+            const date = new Date(selectedDate + 'T12:00:00');
+            const formattedDate = date.toLocaleDateString('es-CL');
+            
+            document.getElementById('finalSummary').innerHTML = `
+                <div><strong>Fecha:</strong> ${formattedDate}</div>
+                <div><strong>Hora:</strong> ${selectedTime}</div>
+                <div><strong>Duración:</strong> ${selectedDuration} minutos</div>
+                <div><strong>Cliente:</strong> ${clientData.name}</div>
+                <div><strong>Email:</strong> ${clientData.email}</div>
+                <div><strong>Teléfono:</strong> ${clientData.phone}</div>
+                ${clientData.reason ? `<div><strong>Motivo:</strong> ${clientData.reason}</div>` : ''}
+            `;
+            
+            document.getElementById('totalPrice').textContent = 
+                `Total: $${prices[selectedDuration].toLocaleString('es-CL')}`;
+        }
+        
+        // Validación del formulario
+        function validateForm() {
+            let isValid = true;
+            
+            const name = document.getElementById('clientName').value.trim();
+            const email = document.getElementById('clientEmail').value.trim();
+            const phone = document.getElementById('clientPhone').value.trim();
+            
+            // Validar nombre
+            if (!name) {
+                showError('nameError', 'El nombre es requerido');
+                isValid = false;
+            } else {
+                hideError('nameError');
+            }
+            
+            // Validar email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                showError('emailError', 'El email es requerido');
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                showError('emailError', 'Por favor ingresa un email válido');
+                isValid = false;
+            } else {
+                hideError('emailError');
+            }
+            
+            // Validar teléfono
+            if (!phone) {
+                showError('phoneError', 'El teléfono es requerido');
+                isValid = false;
+            } else if (phone.replace(/\s/g, '').length < 8) {
+                showError('phoneError', 'El teléfono debe tener al menos 8 dígitos');
+                isValid = false;
+            } else {
+                hideError('phoneError');
+            }
+            
+            return isValid;
+        }
+        
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function hideError(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+        
+        function processPayment() {
+            // Aquí integraremos MercadoPago
+            alert(`¡Reserva confirmada!\n\nPróximamente:\n• Pago real con MercadoPago\n• Email de confirmación\n• Link para Google Calendar\n\nDatos de la reserva:\nFecha: ${selectedDate}\nHora: ${selectedTime}\nCliente: ${clientData.name}\nEmail: ${clientData.email}`);
+        }
+        
+        // Event listeners
+        document.getElementById('clientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                // Guardar datos del cliente
+                clientData = {
+                    name: document.getElementById('clientName').value.trim(),
+                    email: document.getElementById('clientEmail').value.trim(),
+                    phone: document.getElementById('clientPhone').value.trim(),
+                    reason: document.getElementById('clientReason').value.trim()
+                };
+                
+                goToStep(3);
+            }
+        });
+        
+        // Validación en tiempo real
+        document.getElementById('clientPhone').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9\s\-]/g, '');
+        });
+        
+        // Funciones admin
         function showLogin() {
             document.getElementById('loginModal').style.display = 'flex';
         }
