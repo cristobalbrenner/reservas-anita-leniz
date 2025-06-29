@@ -3,36 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservas - Anita Léniz Asesoría en Salud</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Reservas - Anita Léniz</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            margin: 0; 
-            padding: 0; 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #F0F1EC;
+            line-height: 1.6;
         }
-        /* Lucide Icons Styles */
-        .lucide { width: 1em; height: 1em; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .title { color: #173E4B; font-size: 32px; font-weight: bold; text-align: center; margin-bottom: 30px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .brand { color: #173E4B; margin-bottom: 20px; }
+        .brand-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .brand-title { font-size: 18px; font-weight: bold; }
+        .brand-subtitle { font-size: 12px; opacity: 0.7; }
+        .avatar { 
+            width: 60px; height: 60px; border-radius: 50%; background: #173E4B; 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-size: 18px; font-weight: bold; margin-bottom: 20px; 
+        }
+        .consultation-btn {
+            width: 100%; padding: 15px; border-radius: 10px; border: 2px solid #e5e7eb;
+            background: white; color: #173E4B; text-align: left; cursor: pointer;
+            margin-bottom: 15px; transition: all 0.3s;
+        }
+        .consultation-btn.active { background: #173E4B; color: white; border-color: #173E4B; }
+        .consultation-btn:hover { border-color: #173E4B; }
+        .btn-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        .btn-price { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .btn-detail { font-size: 12px; opacity: 0.8; margin-bottom: 3px; }
+        .calendar-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 20px; color: #173E4B; 
+        }
+        .nav-btn { 
+            padding: 8px; border: none; background: transparent; 
+            cursor: pointer; border-radius: 5px; font-size: 16px; 
+        }
+        .nav-btn:hover { background: #f3f4f6; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 10px; }
+        .day-header { text-align: center; font-size: 12px; font-weight: 500; padding: 5px; color: #173E4B; opacity: 0.6; }
+        .day-btn {
+            width: 35px; height: 35px; border: none; border-radius: 50%; 
+            cursor: pointer; font-size: 12px; font-weight: 600;
+            background: transparent; color: #374151;
+        }
+        .day-btn:disabled { color: #d1d5db; cursor: not-allowed; }
+        .day-btn.selected { background: #173E4B; color: white; }
+        .day-btn:hover:not(:disabled):not(.selected) { background: #f3f4f6; }
+        .time-slot {
+            width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #4A90E2;
+            background: white; color: #173E4B; cursor: pointer; margin-bottom: 10px;
+            text-align: center; font-size: 14px; font-weight: 500;
+        }
+        .time-slot.selected { background: #173E4B; color: white; }
+        .time-slot:hover:not(.selected) { background: #f3f4f6; }
+        .confirm-btn {
+            width: 100%; padding: 12px; border-radius: 8px; background: #173E4B;
+            color: white; border: none; cursor: pointer; font-size: 14px; font-weight: 600;
+        }
+        .confirm-btn:hover { opacity: 0.9; }
+        .empty-state { text-align: center; padding: 40px; color: #173E4B; opacity: 0.6; }
+        .admin-btn {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            display: flex; align-items: center; gap: 8px; padding: 8px 15px;
+            background: #F0F1EC; color: #173E4B; border: 1px solid #173E4B;
+            border-radius: 8px; cursor: pointer; font-size: 14px;
+        }
+        .modal { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background: rgba(0,0,0,0.5); display: flex; justify-content: center; 
+            align-items: center; z-index: 1001; 
+        }
+        .modal-content { 
+            background: white; padding: 30px; border-radius: 15px; 
+            max-width: 400px; width: 100%; margin: 20px; 
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; color: #173E4B; font-weight: 600; margin-bottom: 8px; }
+        .form-input { 
+            width: 100%; padding: 12px; border: 2px solid #173E4B; 
+            border-radius: 8px; font-size: 16px; 
+        }
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-secondary { 
+            flex: 1; padding: 12px; background: #e5e7eb; color: #374151; 
+            border: none; border-radius: 8px; cursor: pointer; font-weight: 600; 
+        }
+        .btn-primary { 
+            flex: 1; padding: 12px; background: #173E4B; color: white; 
+            border: none; border-radius: 8px; cursor: pointer; font-weight: 600; 
+        }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <button class="admin-btn" onclick="showLogin()">⚙️ Admin</button>
+    
+    <div class="container">
+        <h1 class="title">Agenda una consulta</h1>
+        
+        <div class="grid">
+            <!-- Panel izquierdo -->
+            <div class="card">
+                <div class="brand">
+                    <div class="brand-header">
+                        <div style="font-size: 24px;">✻</div>
+                        <div>
+                            <div class="brand-title">ANITA LÉNIZ</div>
+                            <div class="brand-subtitle">ASESORÍA EN SALUD</div>
+                        </div>
+                    </div>
+                    <div class="avatar">AL</div>
+                </div>
+                
+                <button class="consultation-btn active" onclick="selectDuration(30)" id="btn30">
+                    <div class="btn-title">Consulta Breve</div>
+                    <div class="btn-price">$ 45.000</div>
+                    <div class="btn-detail">🕐 30 min</div>
+                    <div class="btn-detail">👤 Zoom</div>
+                </button>
+                
+                <button class="consultation-btn" onclick="selectDuration(60)" id="btn60">
+                    <div class="btn-title">Consulta Completa</div>
+                    <div class="btn-price">$ 75.000</div>
+                    <div class="btn-detail">🕐 60 min</div>
+                    <div class="btn-detail">👤 Zoom</div>
+                </button>
+            </div>
+            
+            <!-- Panel central - Calendario -->
+            <div class="card">
+                <h3 style="color: #173E4B; font-size: 16px; font-weight: 600; margin-bottom: 20px; text-align: center;">
+                    Selecciona una Fecha y Hora
+                </h3>
+                
+                <div class="calendar-header">
+                    <button class="nav-btn" onclick="navigateMonth(-1)">‹</button>
+                    <span id="monthYear"></span>
+                    <button class="nav-btn" onclick="navigateMonth(1)">›</button>
+                </div>
+                
+                <div class="calendar-grid">
+                    <div class="day-header">DOM</div>
+                    <div class="day-header">LUN</div>
+                    <div class="day-header">MAR</div>
+                    <div class="day-header">MIE</div>
+                    <div class="day-header">JUE</div>
+                    <div class="day-header">VIE</div>
+                    <div class="day-header">SAB</div>
+                </div>
+                
+                <div class="calendar-grid" id="calendar"></div>
+                
+                <div style="color: #173E4B; font-size: 12px; opacity: 0.7; margin-top: 20px;">
+                    🕐 Zona horaria: Chile - América/Santiago
+                </div>
+            </div>
+            
+            <!-- Panel derecho - Horarios -->
+            <div class="card">
+                <div id="timeSlots">
+                    <div class="empty-state">
+                        <div style="font-size: 24px; margin-bottom: 10px;">📅</div>
+                        <p style="font-size: 12px;">Selecciona una fecha</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de login -->
+    <div id="loginModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 style="color: #173E4B; margin-bottom: 20px; font-size: 18px; font-weight: bold;">
+                Acceso Administrativo
+            </h3>
+            <input type="password" id="adminPassword" placeholder="Contraseña" class="form-input">
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="hideLogin()">Cancelar</button>
+                <button class="btn-primary" onclick="login()">Ingresar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Cargar Lucide Icons
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/lucide@latest/dist/umd/lucide.js';
-        script.onload = function() {
-            // Una vez que Lucide se carga, cargar nuestro App
-            const appScript = document.createElement('script');
-            appScript.type = 'text/babel';
-            appScript.src = './App.js';
-            document.body.appendChild(appScript);
-        };
-        document.head.appendChild(script);
+        let selectedDuration = 30;
+        let selectedDate = null;
+        let selectedTime = null;
+        let currentMonth = new Date();
+        
+        const workHours = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+        
+        function selectDuration(duration) {
+            selectedDuration = duration;
+            document.getElementById('btn30').classList.toggle('active', duration === 30);
+            document.getElementById('btn60').classList.toggle('active', duration === 60);
+        }
+        
+        function navigateMonth(direction) {
+            currentMonth.setMonth(currentMonth.getMonth() + direction);
+            generateCalendar();
+            selectedDate = null;
+            selectedTime = null;
+            updateTimeSlots();
+        }
+        
+        function generateCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+            document.getElementById('monthYear').textContent = 
+                currentMonth.toLocaleDateString('es-CL', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            let html = '';
+            
+            // Días vacíos al inicio
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                html += '<div></div>';
+            }
+            
+            // Días del mes
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = new Date(year, month, day);
+                const dayName = date.getDay();
+                const isWeekend = dayName === 0 || dayName === 6;
+                const isPast = date < today;
+                const isAvailable = !isWeekend && !isPast;
+                
+                html += `<button class="day-btn" ${!isAvailable ? 'disabled' : ''} 
+                         onclick="selectDate('${date.toISOString().split('T')[0]}')">${day}</button>`;
+            }
+            
+            document.getElementById('calendar').innerHTML = html;
+        }
+        
+        function selectDate(dateStr) {
+            selectedDate = dateStr;
+            selectedTime = null;
+            
+            // Actualizar estilos
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            updateTimeSlots();
+        }
+        
+        function updateTimeSlots() {
+            const container = document.getElementById('timeSlots');
+            
+            if (!selectedDate) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 24px; margin-bottom: 10px;">📅</div>
+                        <p style="font-size: 12px;">Selecciona una fecha</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const date = new Date(selectedDate + 'T12:00:00');
+            const dayName = date.toLocaleDateString('es-CL', { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long' 
+            });
+            
+            let html = `<div style="color: #173E4B; font-size: 14px; font-weight: 600; margin-bottom: 15px;">${dayName}</div>`;
+            
+            workHours.forEach(hour => {
+                html += `<button class="time-slot" onclick="selectTime('${hour}')">${hour}</button>`;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function selectTime(time) {
+            selectedTime = time;
+            
+            document.querySelectorAll('.time-slot').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // Agregar botón de confirmar
+            if (!document.getElementById('confirmBtn')) {
+                const confirmBtn = document.createElement('button');
+                confirmBtn.id = 'confirmBtn';
+                confirmBtn.className = 'confirm-btn';
+                confirmBtn.textContent = 'Confirmar';
+                confirmBtn.onclick = proceedToForm;
+                document.getElementById('timeSlots').appendChild(confirmBtn);
+            }
+        }
+        
+        function proceedToForm() {
+            alert(`¡Perfecto! Has seleccionado:\n\nFecha: ${selectedDate}\nHora: ${selectedTime}\nDuración: ${selectedDuration} min\n\nPronto tendremos el formulario completo con MercadoPago integrado.`);
+        }
+        
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        
+        function hideLogin() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        }
+        
+        function login() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === 'anita2024') {
+                alert('¡Acceso administrativo concedido! Panel de admin próximamente.');
+                hideLogin();
+            } else {
+                alert('Contraseña incorrecta');
+            }
+        }
+        
+        // Inicializar
+        generateCalendar();
     </script>
 </body>
 </html>
