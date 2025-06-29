@@ -498,36 +498,36 @@
     </div>
 
     <script>
-        // Variables globales
-        let selectedDuration = 30;
-        let selectedDate = null;
-        let selectedTime = null;
-        let currentMonth = new Date();
-        let clientData = {};
-        let isAdminMode = false;
-        
-        // Configuración (simulamos localStorage)
-        let appConfig = {
-            workHours: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
-            prices: { 30: 45000, 60: 75000 },
-            blockedDates: [],
-            reservations: []
-        };
-        
-        // Funciones principales
-        function selectDuration(duration) {
-            selectedDuration = duration;
-            document.getElementById('btn30').classList.toggle('active', duration === 30);
-            document.getElementById('btn60').classList.toggle('active', duration === 60
-        }
-        
-        function navigateMonth(direction) {
-            currentMonth.setMonth(currentMonth.getMonth() + direction);
-            generateCalendar();
-            selectedDate = null;
-            selectedTime = null;
-            updateTimeSlots();
-        }
+    // Variables globales
+    let selectedDuration = 30;
+    let selectedDate = null;
+    let selectedTime = null;
+    let currentMonth = new Date();
+    let clientData = {};
+    let isAdminMode = false;
+    
+    // Configuración (simulamos localStorage)
+    let appConfig = {
+        workHours: ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
+        prices: { 30: 45000, 60: 75000 },
+        blockedDates: [],
+        reservations: []
+    };
+    
+    // Funciones principales
+    function selectDuration(duration) {
+        selectedDuration = duration;
+        document.getElementById('btn30').classList.toggle('active', duration === 30);
+        document.getElementById('btn60').classList.toggle('active', duration === 60);
+    }
+    
+    function navigateMonth(direction) {
+        currentMonth.setMonth(currentMonth.getMonth() + direction);
+        generateCalendar();
+        selectedDate = null;
+        selectedTime = null;
+        updateTimeSlots();
+    }
         
         function generateCalendar() {
             const year = currentMonth.getFullYear();
