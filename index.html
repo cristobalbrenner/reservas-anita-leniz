@@ -868,9 +868,9 @@
         function updateAdminToggle() {
             const btn = document.getElementById('adminToggle');
             if (isAdminMode) {
-                btn.innerHTML = '🏠 Volver al Sitio';
-                btn.onclick = () => goToStep(1);
+                btn.style.display = 'none'; // Ocultar botón cuando está en admin
             } else {
+                btn.style.display = 'flex'; // Mostrar solo cuando no está en admin
                 btn.innerHTML = '⚙️ Admin';
                 btn.onclick = showLogin;
             }
